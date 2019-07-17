@@ -23,11 +23,13 @@ app.use(bodyParser.json())
 //Importar Rutas
 var appRoutes = require('./routes/app');
 var usuarioRoutes = require('./routes/usuario');
+var hospitalRoutes = require('./routes/hospital');
 var loginRoutes = require('./routes/login');
 
 //Rutas
 app.use('/login', loginRoutes);
 app.use('/usuario', usuarioRoutes);
+app.use('/hospital', hospitalRoutes);
 app.use('/', appRoutes);
 
 // Escuchar peticiones
