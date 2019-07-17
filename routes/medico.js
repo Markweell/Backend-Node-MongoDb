@@ -7,7 +7,18 @@ var app = express();
 var Medico = require('../models/medico');
 
 app.get('/', (req, res , next) => {
-    Medico.find({},).exec(
+
+    let desde = req.query.desde || 0;
+    desde = Number(desde);
+
+
+    Medico
+    .find({},)
+    .populate('usuario', 'nombre email')
+    .populate('hospital')
+    .skip(desde)
+    .limit(5)
+    .exec(
         (err, medicos) => {
             if(err) {
                 return res.status(500).json({
@@ -16,9 +27,12 @@ app.get('/', (req, res , next) => {
                     error: err
                 })
             }
-            res.status(200).json({
-                ok: true,
-                medicos
+           Medico.count({}, (err,conteo) => {
+                res.status(200).json({
+                    ok: true,
+                    medicos,
+                    conteo
+                });
             })
         });
 });
@@ -90,7 +104,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res , next) => {
 })
 app.delete('/:id', mdAutenticacion.verificaToken, (req, res , next) => {
     var id = req.params.id;
-    
+
     Medico.findByIdAndRemove(id, (err, medicoBorrado) => { 
         if( err ){
             return res.status(400).json({
