@@ -1,5 +1,8 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+
+var mdAutenticacion = require('../middlewares/autenticacion');
 
 var app = express();
 
@@ -13,7 +16,7 @@ app.get('/', (req, res, next )=>{
                 return res.status(500).json({
                     ok: false,
                     mensaje: 'Error cargado usuario',
-                    erros: err 
+                    error: err 
                 })
             }
             res.status(200).json({
@@ -23,24 +26,26 @@ app.get('/', (req, res, next )=>{
         })
 });
 
+
+
 // Actualizar un usuario.
-app.put('/:id', (req,res)=>{
+app.put('/:id', mdAutenticacion.verificaToken, (req,res)=>{
     var id = req.params.id;
-    var body = req.body
+    var body = req.body;
 
     Usuario.findById( id , (err, usuario) => {
         if(err){
             return res.status(500).json({
                 ok: false,
                 mensaje: 'Error al buscar usuario',
-                erros: err 
+                error: err 
             })
         }
         if(!usuario){
             return res.status(400).json({
                 ok: false,
                 mensaje: 'El usuario con el id '+id+ ' no existe. ',
-                erros: {message: 'No existe usuario con ese ID'}
+                error: {message: 'No existe usuario con ese ID'}
             })
         }
 
@@ -53,7 +58,7 @@ app.put('/:id', (req,res)=>{
                 return res.status(400).json({
                     ok: false,
                     mensaje: 'Error al actualizar usuario',
-                    erros: err 
+                    error: err 
                 })
             }
             usuarioGuardado.password = ':)';
@@ -62,14 +67,14 @@ app.put('/:id', (req,res)=>{
                 usuario: usuarioGuardado
             })    
         });
-    });
-    
-})
-
+    }); 
+});
 
 // Crear un nuevo usuario.
-app.post('/', (req, res)=>{
+app.post('/', mdAutenticacion.verificaToken, (req, res)=>{
+
     var body = req.body;
+
     var usuario = new Usuario({
         nombre: body.nombre,
         email:  body.email,
@@ -83,14 +88,42 @@ app.post('/', (req, res)=>{
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Error al crear usuario',
-                erros: err 
+                error: err 
             })
         }    
         res.status(201).json({
             ok: true,
-            usuario: usuarioGuardado
+            usuario: usuarioGuardado,
+            usuarioToken: req.usuario
         })
     });
-})
+});
+
+app.delete('/:id', mdAutenticacion.verificaToken, (req,res) => { 
+    var id = req.params.id;
+    var body = req.body;
+    Usuario.findByIdAndRemove(id, (err,usuarioBorrado) => { 
+        if(err){
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Error al borrar usuario',
+                error: {message: 'Error al borrar usuario'} 
+            })
+        }
+
+        if(!usuarioBorrado){
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'No existe un usuario con ese id',
+                error: err 
+            })
+        }
+
+        res.status(201).json({
+            ok: true,
+            usuario: usuarioBorrado
+        })
+    })
+});
 
 module.exports = app;
