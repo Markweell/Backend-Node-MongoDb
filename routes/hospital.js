@@ -103,7 +103,7 @@ app.delete('/:id', mdAutenticacion.verificaToken, (req, res , next) => {
         if(!hospitalBorrado){
             return res.status(400).json({
                 ok: false,
-                mensaje: 'No existe un usuario con ese id',
+                mensaje: 'No existe un hospital con ese id',
                 error: err
             })
         }

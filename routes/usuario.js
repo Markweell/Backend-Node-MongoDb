@@ -1,6 +1,5 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
 
 var mdAutenticacion = require('../middlewares/autenticacion');
 
@@ -22,8 +21,8 @@ app.get('/', (req, res, next )=>{
             res.status(200).json({
                 ok: true,
                 usuarios
-            })
-        })
+            });
+        });
 });
 
 
@@ -39,14 +38,14 @@ app.put('/:id', mdAutenticacion.verificaToken, (req,res)=>{
                 ok: false,
                 mensaje: 'Error al buscar usuario',
                 error: err 
-            })
+            });
         }
         if(!usuario){
             return res.status(400).json({
                 ok: false,
-                mensaje: 'El usuario con el id '+id+ ' no existe. ',
+                mensaje: 'El usuario con el id ' + id + ' no existe.',
                 error: {message: 'No existe usuario con ese ID'}
-            })
+            });
         }
 
         usuario.nombre = body.nombre;
@@ -59,7 +58,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req,res)=>{
                     ok: false,
                     mensaje: 'Error al actualizar usuario',
                     error: err 
-                })
+                });
             }
             usuarioGuardado.password = ':)';
             res.status(200).json({
