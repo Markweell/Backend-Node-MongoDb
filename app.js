@@ -13,8 +13,7 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) =
 });
  
 
-//Body Parser
-
+// Body Parser
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -25,14 +24,27 @@ var appRoutes = require('./routes/app');
 var usuarioRoutes = require('./routes/usuario');
 var hospitalRoutes = require('./routes/hospital');
 var medicoRoutes = require('./routes/medico');
+var busquedaRoutes = require('./routes/busqueda');
 var loginRoutes = require('./routes/login');
+var uploadRoutes = require('./routes/upload');
+var imagenesRoutes = require('./routes/imagenes');
 
 //Rutas
 app.use('/login', loginRoutes);
 app.use('/usuario', usuarioRoutes);
 app.use('/medico', medicoRoutes);
+app.use('/busqueda', busquedaRoutes);
 app.use('/hospital', hospitalRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/imagenes', imagenesRoutes);
 app.use('/', appRoutes);
+
+
+// Server-index 
+// var serveIndex = require('serve-index');
+// app.use(express.static(__dirname + '/'))
+// app.use('/uploads', serveIndex(__dirname + '/uploads'));
+
 
 // Escuchar peticiones
 
